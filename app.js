@@ -34,7 +34,13 @@ if (!isProduction) {
 if(isProduction){
   mongoose.connect(process.env.MONGODB_URI);
 } else {
-  mongoose.connect('mongodb://localhost/conduit');
+  mongoose.connect('mongodb://localhost/conduit', function(err) {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log('Connected to Mongo.')
+    }
+  });
   mongoose.set('debug', true);
 }
 
