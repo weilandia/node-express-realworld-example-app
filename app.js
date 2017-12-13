@@ -38,7 +38,7 @@ if(isProduction){
     if(err) {
       console.log(err);
     } else {
-      console.log('Connected to Mongo.')
+      console.log('Connected to Mongo.');
     }
   });
   mongoose.set('debug', true);
@@ -47,6 +47,7 @@ if(isProduction){
 
 require('./models/User');
 require('./models/Article');
+require('./models/Comment');
 require('./config/passport');
 
 app.use(require('./routes'));

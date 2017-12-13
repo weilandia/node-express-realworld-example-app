@@ -10,7 +10,8 @@ const ArticleSchema = new mongoose.Schema({
   body: String,
   favoritesCount: {type: Number, default: 0},
   tagList: [{ type: String }],
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
 }, {timestamps: true});
 
 ArticleSchema.plugin(uniqueValidator, {message: 'is already taken'});
@@ -37,6 +38,15 @@ ArticleSchema.methods.updateFavoriteCount = function() {
   });
 };
 
+ArticleSchema.methods.updateFavoriteCount = function() {
+  const article = this;
+
+  return User.count({ favorites: { $in: [article._id] } }).then(function(count) {
+    article.favoritesCount = count;
+    return article.save();
+  });
+};
+
 ArticleSchema.methods.toJSONFor = function(user){
   return {
     slug: this.slug,
@@ -46,6 +56,7 @@ ArticleSchema.methods.toJSONFor = function(user){
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
     tagList: this.tagList,
+    favorited: user.isFavorite(this._id),
     favoritesCount: this.favoritesCount,
     author: this.author.toProfileJSONFor(user)
   };
